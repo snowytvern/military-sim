@@ -1,0 +1,77 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Игрок" as Player
+actor "Администратор" as Admin
+
+rectangle "Информационная система (Сетевой военный симулятор)" {
+
+rectangle "Авторизация и доступ" {
+usecase "Авторизация" as UC_Auth
+}
+
+rectangle "Сетевые сессии (Игрок)" {
+usecase "Создание сессии" as UC_CreateSession
+usecase "Подключение к сессии" as UC_JoinSession
+usecase "Выбор техники" as UC_SelectVehicle
+}
+
+rectangle "Управление техникой" {
+usecase "Управление танком" as UC_Tank
+usecase "Управление самолетом" as UC_Plane
+usecase "Стрельба из орудий" as UC_Shoot
+}
+
+rectangle "Игровой процесс" {
+usecase "Разрушение объектов" as UC_Destroy
+usecase "Идентификация противника" as UC_Enemy
+}
+
+rectangle "Управление пользователями (Админ)" {
+usecase "Просмотр списка игроков" as UC_ViewPlayers
+usecase "Блокировка игрока" as UC_BlockPlayer
+usecase "Просмотр логов" as UC_Logs
+}
+
+rectangle "Управление сервером (Админ)" {
+usecase "Запуск/Остановка сервера" as UC_Server
+usecase "Мониторинг нагрузки" as UC_Load
+}
+
+rectangle "Управление сессиями (Админ)" {
+usecase "Принудительное завершение" as UC_AdminSession
+}
+}
+
+Player --> UC_CreateSession
+Player --> UC_JoinSession
+Player --> UC_SelectVehicle
+Player --> UC_Tank
+Player --> UC_Plane
+Player --> UC_Shoot
+
+UC_ViewPlayers <-- Admin
+UC_BlockPlayer <-- Admin
+UC_Logs <-- Admin
+UC_Server <-- Admin
+UC_Load <-- Admin
+UC_AdminSession <-- Admin
+
+Player --> UC_Auth
+UC_Auth <-- Admin
+
+UC_CreateSession .> UC_Auth : <<include>>
+UC_JoinSession .> UC_Auth : <<include>>
+UC_Tank .> UC_Auth : <<include>>
+UC_Plane .> UC_Auth : <<include>>
+UC_BlockPlayer .> UC_Auth : <<include>>
+UC_Server .> UC_Auth : <<include>>
+
+UC_Shoot .> UC_Tank : <<extend>>
+UC_Shoot .> UC_Plane : <<extend>>
+UC_Destroy .> UC_Shoot : <<extend>>
+UC_Enemy .> UC_Tank : <<extend>>
+UC_Load .> UC_Server : <<extend>>
+
+@enduml
