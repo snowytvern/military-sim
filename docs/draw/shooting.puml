@@ -1,0 +1,33 @@
+@startuml
+title SD-03. Стрельба и разрушение
+autonumber
+actor "Игрок" as User
+participant ":Клиент (Система)" as Client
+participant ":Сервер" as Server
+
+User -> Client: Нажать «Выстрел»
+Client -> Server: Команда выстрела
+activate Server
+Server -> Server: Создание снаряда и расчет траектории
+
+alt [Промах]
+Server -->> Client: Синхронизация (промах)
+Client -->> User: Эффект попадания в землю
+else [Попадание в союзника]
+Server -->> Client: Синхронизация (союзник)
+Client -->> User: Уведомление «Это союзник!»
+else [Попадание в цель]
+Server -> Server: Расчет урона
+Server -> Server: Уменьшение прочности объекта
+
+alt [Прочность > 0]
+Server -->> Client: Синхронизация (урон)
+Client -->> User: Эффект попадания
+else [Прочность = 0]
+Server -> Server: Регистрация разрушения
+Server -->> Client: Синхронизация (разрушение)
+Client -->> User: Эффект взрыва, удаление объекта
+end
+end
+deactivate Server
+@enduml
