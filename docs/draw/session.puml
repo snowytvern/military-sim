@@ -1,0 +1,34 @@
+@startuml
+title SD-02. Создание игровой сессии
+autonumber
+actor "Игрок (Хост)" as Host
+actor "Игрок (Участник)" as Client
+participant ":Клиент" as SysClient
+participant ":Сервер" as Server
+
+Host -> SysClient: Нажать «Создать сессию»
+SysClient -> Server: Запрос на создание сессии
+activate Server
+Server -> Server: Генерация уникального ID
+Server -->> SysClient: ID сессии, статус «Ожидание»
+deactivate Server
+SysClient -->> Host: Отображение лобби
+
+Client -> Server: Подключение по ID сессии
+activate Server
+alt [Сессия заполнена]
+Server -->> Client: Сообщение «Сессия заполнена»
+else [Неверный ID]
+Server -->> Client: Сообщение «Сессия не найдена»
+else [Успешное подключение]
+Server -> Server: Добавление игрока в слот
+Server -->> Host: Синхронизация списка игроков
+Server -->> Client: Синхронизация списка игроков
+end
+
+Host -> SysClient: Нажать «Начать матч»
+SysClient -> Server: Команда старта
+Server -->> Host: Статус «Матч запущен»
+Server -->> Client: Статус «Матч запущен»
+deactivate Server
+@enduml
