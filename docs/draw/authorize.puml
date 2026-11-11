@@ -1,0 +1,33 @@
+@startuml
+title SD-01. Авторизация
+autonumber
+actor "Игрок" as User
+participant ":Система" as System
+database ":База данных" as DB
+
+User -> System: Ввести логин и пароль
+activate System
+System -> System: Проверка заполнения полей
+
+alt [Поля не заполнены]
+System -->> User: Сообщение «Заполните все поля»
+else [Поля заполнены]
+System -> DB: Поиск учетной записи
+activate DB
+DB -->> System: Данные учетной записи
+deactivate DB
+
+alt [Пароль неверный]
+System -->> User: Сообщение «Неверный логин или пароль»
+else [Аккаунт заблокирован]
+System -->> User: Сообщение «Аккаунт заблокирован»
+else [Успешный вход]
+System -> DB: Запись в лог о входе
+activate DB
+DB -->> System: Подтверждение
+deactivate DB
+System -->> User: Открытие главного меню
+end
+end
+deactivate System
+@enduml
